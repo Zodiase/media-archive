@@ -6,6 +6,7 @@
         "test": "meteor test --once --driver-package meteortesting:mocha",
         "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
         "visualize": "meteor --production --extra-packages bundle-visualizer",
+        "coverage": "nyc npm run test",
         "lint": "eslint . --ext .js,.ts,.tsx",
         "pretest": "npm run lint --silent"
     },
@@ -35,6 +36,7 @@
         "eslint-plugin-react": "^7.18.0",
         "eslint-plugin-react-hooks": "^2.3.0",
         "jquery": "^3.4.1",
+        "nyc": "^15.0.0",
         "prettier": "^1.19.1",
         "typescript": "^3.6.3"
     },
