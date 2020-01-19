@@ -1,0 +1,25 @@
+extends:
+    - '@meteorjs/eslint-config-meteor'
+    - 'plugin:prettier/recommended'
+    - 'prettier/react'
+plugins:
+    - 'react-hooks'
+settings:
+    import/resolver:
+        meteor:
+            extensions:
+                - .tsx
+                - .ts
+                - .jsx
+                - .js
+rules:
+    react-hooks/rules-of-hooks: error
+    react-hooks/exhaustive-deps: warn
+overrides:
+    - files:
+          - 'tests/*.tsx'
+          - 'tests/*.ts'
+          - 'tests/*.jsx'
+          - 'tests/*.js'
+      env:
+          mocha: true

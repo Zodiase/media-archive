@@ -6,11 +6,11 @@ import Hello from './Hello';
 import Info from './Info';
 
 export default () => (
-  <Grommet>
-    <Main>
-      <Heading>Welcome to Meteor!</Heading>
-      <Hello />
-      <Info />
-    </Main>
-  </Grommet>
+    <Grommet>
+        <Main>
+            <Heading>Welcome to Meteor!</Heading>
+            <Hello />
+            <Info />
+        </Main>
+    </Grommet>
 );
