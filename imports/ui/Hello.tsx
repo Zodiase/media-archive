@@ -1,4 +1,7 @@
 import React from 'react';
+import { Box } from 'grommet/components/Box';
+import { Button } from 'grommet/components/Button';
+import { Paragraph } from 'grommet/components/Paragraph';
 
 export default class Hello extends React.Component {
   state = {
@@ -13,10 +16,10 @@ export default class Hello extends React.Component {
 
   render() {
     return (
-      <div>
-        <button onClick={() => this.increment()}>Click Me</button>
-        <p>You've pressed the button {this.state.counter} times.</p>
-      </div>
+      <Box>
+        <Button onClick={() => this.increment()} alignSelf="start" primary>Click Me</Button>
+        <Paragraph>You've pressed the button {this.state.counter} times.</Paragraph>
+      </Box>
     );
   }
 }

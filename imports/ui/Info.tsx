@@ -1,31 +1,26 @@
-import React from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
+import { Box } from 'grommet/components/Box';
+import { Heading } from 'grommet/components/Heading';
+import { List } from 'grommet/components/List';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Links, Link } from '../api/links';
 
-class Info extends React.Component<{
+const Info: FunctionComponent<{
   links: Link[];
-}> {
-  render() {
-    const links = this.props.links.map(
-      link => this.makeLink(link)
-    );
-
+}> = ({ links }) => {
+  const useListItem = useCallback((link: Link) => {
     return (
-      <div>
-        <h2>Learn Meteor!</h2>
-        <ul>{ links }</ul>
-      </div>
+      <a href={link.url} target="_blank">{link.title}</a>
     );
-  }
+  }, []);
 
-  makeLink(link: Link) {
-    return (
-      <li key={link._id}>
-        <a href={link.url} target="_blank">{link.title}</a>
-      </li>
-    );
-  }
-}
+  return (
+    <Box>
+      <Heading level={2}>Learn Meteor!</Heading>
+      <List data={links}>{useListItem}</List>
+    </Box>
+  );
+};
 
 export default withTracker(() => {
   return {
