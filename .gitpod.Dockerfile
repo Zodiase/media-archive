@@ -17,4 +17,7 @@ RUN curl https://install.meteor.com/ | sh
 ENV METEOR_PATH="$HOME/.meteor"
 ENV PATH="$PATH:$METEOR_PATH"
 
+# Switching users in the Dockerfile to gitpod requires switching back to USER root at the end of the Dockerfile, so that the IDE can start.
+# Ignore warning from Hadolint: Last user should not be root.
+# hadolint ignore=DL3002
 USER root
