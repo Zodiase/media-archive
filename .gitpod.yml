@@ -1,0 +1,16 @@
+image:
+    file: .gitpod.Dockerfile
+
+# List the ports you want to expose and what to do when they are served. See https://www.gitpod.io/docs/43_config_ports/
+ports:
+    - port: 3000
+      onOpen: ignore
+
+# List the start up tasks. You can start them in parallel in multiple terminals. See https://www.gitpod.io/docs/44_config_start_tasks/
+tasks:
+    - init: npm install
+    - command: ROOT_URL=$(gp url 3000) npm run test-app
+      name: Meteor Test Server
+      openIn: right
+    - command: gp await-port 3000 && gp preview $(gp url 3000)
+      name: Preview Meteor App
