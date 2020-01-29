@@ -20,7 +20,7 @@
     "devDependencies": {
         "@meteorjs/eslint-config-meteor": "^1.0.5",
         "@types/meteor": "^1.4.30",
-        "@types/mocha": "^5.2.7",
+        "@types/mocha": "^7.0.0",
         "@types/react": "^16.9.0",
         "@types/react-dom": "^16.9.0",
         "babel-eslint": "^10.0.3",
