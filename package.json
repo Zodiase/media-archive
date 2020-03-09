@@ -15,7 +15,7 @@
         "meteor-node-stubs": "^1.0.0",
         "react": "^16.13.0",
         "react-dom": "^16.13.0",
-        "styled-components": "^5.0.0"
+        "styled-components": "^5.0.1"
     },
     "devDependencies": {
         "@meteorjs/eslint-config-meteor": "^1.0.5",
