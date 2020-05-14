@@ -18,7 +18,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "styled-components": "^5.1.0",
-    "snyk": "^1.319.2"
+    "snyk": "^1.320.2"
   },
   "devDependencies": {
     "@meteorjs/eslint-config-meteor": "^1.0.5",
