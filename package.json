@@ -12,7 +12,7 @@
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {
-    "@babel/runtime": "^7.9.0",
+    "@babel/runtime": "^7.9.6",
     "grommet": "^2.13.0",
     "meteor-node-stubs": "^1.0.0",
     "react": "^16.13.1",
