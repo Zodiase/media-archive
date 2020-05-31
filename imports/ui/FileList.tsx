@@ -7,6 +7,21 @@ import { DataTable } from 'grommet/components/DataTable';
 import formatFileSize from 'filesize';
 import { Files, File } from '/imports/api/files';
 
+export function renderFileSizeColumnCell(file: File): ReactNode {
+    return formatFileSize(file.size, {
+        // Minimum size unit is MB.
+        exponent: 2,
+    });
+}
+
+export function renderCreatedAtColumnCell(file: File): ReactNode {
+    return file.createdAt.toLocaleString();
+}
+
+export function renderModifiedAtColumnCell(file: File): ReactNode {
+    return file.modifiedAt.toLocaleString();
+}
+
 export const FileList = (): ReactElement => {
     const { files } = useTracker(() => {
         // The publication must also be secure
@@ -56,18 +71,3 @@ export const FileList = (): ReactElement => {
 };
 
 export default FileList;
-
-export function renderFileSizeColumnCell(file: File): ReactNode {
-    return formatFileSize(file.size, {
-        // Minimum size unit is MB.
-        exponent: 2,
-    });
-}
-
-export function renderCreatedAtColumnCell(file: File): ReactNode {
-    return file.createdAt.toLocaleString();
-}
-
-export function renderModifiedAtColumnCell(file: File): ReactNode {
-    return file.modifiedAt.toLocaleString();
-}
