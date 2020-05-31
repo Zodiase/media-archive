@@ -5,7 +5,16 @@ import './publications';
 function insertFile(name: string) {
     const now = new Date();
 
-    Files.insert({ name, size: 0, createdAt: now, modifiedAt: now, chunks: [] });
+    Files.insert({
+        name,
+        size: 0,
+        type: '',
+        createdAt: now,
+        modifiedAt: now,
+        chunks: [],
+        chunkSize: 15 * 1024 * 1024,
+        lastModified: now.valueOf(),
+    });
 }
 
 Meteor.startup(() => {
