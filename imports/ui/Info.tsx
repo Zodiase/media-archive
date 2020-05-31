@@ -1,15 +1,16 @@
+import { Meteor } from 'meteor/meteor';
 import React, { ReactElement, useCallback } from 'react';
 import { Box } from 'grommet/components/Box';
 import { Heading } from 'grommet/components/Heading';
 import { List } from 'grommet/components/List';
 import { withTracker } from 'meteor/react-meteor-data';
-import { Links, Link } from '../api/links';
+import { Files, File } from '/imports/api/files';
 
-const Info = ({ links }: { links: Link[] }): ReactElement => {
-    const useListItem = useCallback((link: Link) => {
+const Info = ({ files }: { files: File[] }): ReactElement => {
+    const useListItem = useCallback((file: File) => {
         return (
-            <a href={link.url} target="_blank" rel="noopener noreferrer">
-                {link.title}
+            <a href="#" target="_blank" rel="noopener noreferrer">
+                {file.name}
             </a>
         );
     }, []);
@@ -17,13 +18,15 @@ const Info = ({ links }: { links: Link[] }): ReactElement => {
     return (
         <Box>
             <Heading level={2}>Learn Meteor!</Heading>
-            <List data={links}>{useListItem}</List>
+            <List data={files}>{useListItem}</List>
         </Box>
     );
 };
 
 export default withTracker(() => {
+    Meteor.subscribe('proto-files');
+
     return {
-        links: Links.find().fetch(),
+        files: Files.find().fetch(),
     };
 })(Info);

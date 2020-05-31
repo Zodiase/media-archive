@@ -1,19 +1,22 @@
 import { Meteor } from 'meteor/meteor';
-import { Links } from '/imports/api/links';
+import { Files } from '/imports/api/files';
+import './publications';
 
-function insertLink(title: string, url: string) {
-    Links.insert({ title, url, createdAt: new Date() });
+function insertFile(name: string) {
+    const now = new Date();
+
+    Files.insert({ name, size: 0, createdAt: now, modifiedAt: now, chunks: [] });
 }
 
 Meteor.startup(() => {
     // If the Links collection is empty, add some data.
-    if (Links.find().count() === 0) {
-        insertLink('Do the Tutorial', 'https://www.meteor.com/tutorials/react/creating-an-app');
+    if (Files.find().count() === 0) {
+        insertFile('Do the Tutorial');
 
-        insertLink('Follow the Guide', 'http://guide.meteor.com');
+        insertFile('Follow the Guide');
 
-        insertLink('Read the Docs', 'https://docs.meteor.com');
+        insertFile('Read the Docs');
 
-        insertLink('Discussions', 'https://forums.meteor.com');
+        insertFile('Discussions');
     }
 });
