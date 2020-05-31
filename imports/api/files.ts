@@ -66,7 +66,7 @@ export interface FileChunk {
     /**
      * Data of this chunk.
      */
-    data: BinaryType;
+    data: Buffer;
 }
 
 export const Files = new Mongo.Collection<File>('files');
