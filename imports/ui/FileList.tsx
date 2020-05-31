@@ -3,9 +3,10 @@ import { useTracker } from 'meteor/react-meteor-data';
 import React, { ReactElement, ReactNode, useMemo } from 'react';
 import { Box } from 'grommet/components/Box';
 import { Heading } from 'grommet/components/Heading';
-import { DataTable } from 'grommet/components/DataTable';
+import { DataTable, DataTableProps } from 'grommet/components/DataTable';
 import formatFileSize from 'filesize';
 import { Files, File } from '/imports/api/files';
+import FileUpload from './FileUpload';
 
 export function renderFileSizeColumnCell(file: File): ReactNode {
     return formatFileSize(file.size, {
@@ -33,7 +34,7 @@ export const FileList = (): ReactElement => {
         };
     }, []);
 
-    const dataTableColumns = useMemo(
+    const filesTableColumns: DataTableProps['columns'] = useMemo(
         () => [
             {
                 property: 'name',
@@ -64,8 +65,10 @@ export const FileList = (): ReactElement => {
 
     return (
         <Box>
+            <FileUpload />
+
             <Heading level={2}>Files</Heading>
-            <DataTable columns={dataTableColumns} data={files} />
+            <DataTable columns={filesTableColumns} data={files} />
         </Box>
     );
 };
