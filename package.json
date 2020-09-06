@@ -17,7 +17,7 @@
     "meteor-node-stubs": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "styled-components": "^5.1.1",
+    "styled-components": "^5.2.0",
     "snyk": "^1.320.3"
   },
   "devDependencies": {
