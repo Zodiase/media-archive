@@ -13,12 +13,12 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.9.6",
-    "grommet": "^2.13.0",
+    "grommet": "^2.14.0",
     "meteor-node-stubs": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "styled-components": "^5.1.1",
-    "snyk": "^1.391.1"
+    "snyk": "^1.685.0"
   },
   "devDependencies": {
     "@meteorjs/eslint-config-meteor": "^1.0.5",
