@@ -53,5 +53,3 @@ workflows:
             - test:
                 requires:
                     - install
-            - node/test:
-                test-results-for: mocha
