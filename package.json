@@ -8,8 +8,7 @@
     "test-lint": "npm run lint --silent",
     "test-snyk": "snyk test",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
-    "lint": "eslint . --ext .js,.ts,.tsx",
-    "pretest": "npm run test-lint && npm run test-snyk"
+    "lint": "eslint . --ext .js,.ts,.tsx"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.6",
