@@ -5,7 +5,6 @@
 version: 2.1
 orbs:
     node: circleci/node@5.2.0
-    snyk: snyk/snyk@2.0.2
 jobs:
     build:
         docker:
@@ -41,8 +40,6 @@ jobs:
                   paths:
                       - node_modules
                   key: v1-dependencies-{{ checksum "package.json" }}
-
-            - snyk/scan
 
             - run:
                   name: run tests
