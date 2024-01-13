@@ -12,17 +12,8 @@ jobs:
         working_directory: ~/repo
         steps:
             - checkout
-            - restore_cache:
-                keys:
-                    - v1-dependencies-{{ checksum "package.json" }}
-                    - v1-dependencies-
-            - run:
-                name: install dependencies
-                command: npm ci
-            - save_cache:
-                paths:
-                    - node_modules
-                key: v1-dependencies-{{ checksum "package.json" }}
+            - node/install-packages:
+                pkg-manager: npm
             - persist_to_workspace:
                 root: ~/repo
                 paths:
@@ -62,3 +53,5 @@ workflows:
             - test:
                 requires:
                     - install
+            - node/test:
+                test-results-for: mocha
