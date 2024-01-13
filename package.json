@@ -5,9 +5,11 @@
     "start": "meteor run",
     "test": "meteor test --once --driver-package meteortesting:mocha",
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+    "test-lint": "npm run lint --silent",
+    "test-snyk": "snyk test",
     "visualize": "meteor --production --extra-packages bundle-visualizer",
     "lint": "eslint . --ext .js,.ts,.tsx",
-    "pretest": "npm run lint --silent"
+    "pretest": "npm run test-lint && npm run test-snyk"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.6",
@@ -36,6 +38,7 @@
     "eslint-plugin-react-hooks": "^2.3.0",
     "jquery": "^3.5.0",
     "prettier": "^1.19.1",
+    "snyk": "^1.1269.0",
     "typescript": "^3.6.3"
   },
   "meteor": {
