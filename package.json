@@ -14,8 +14,8 @@
     "@babel/runtime": "^7.23.8",
     "grommet": "^2.34.2",
     "meteor-node-stubs": "^1.2.7",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "styled-components": "^6.1.8"
   },
   "devDependencies": {
