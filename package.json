@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.23.7",
-    "@babel/runtime": "^7.9.6",
+    "@babel/runtime": "^7.23.8",
     "filesize": "^6.1.0",
     "grommet": "^2.34.2",
     "meteor-node-stubs": "^1.2.7",
