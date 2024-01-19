@@ -24,6 +24,7 @@ export const FileUpload = (): ReactElement => {
             const newFileUploadTasks = droppedFiles.map((droppedFile) => {
                 return {
                     file: droppedFile,
+                    uploadState: 'pending',
                     reader: new FileReader(),
                 };
             });
@@ -48,6 +49,11 @@ export const FileUpload = (): ReactElement => {
             {
                 property: 'file.type',
                 header: 'Type',
+                size: 'small',
+            },
+            {
+                property: 'uploadState',
+                header: 'Upload State',
                 size: 'xsmall',
             },
         ],
