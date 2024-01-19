@@ -5,26 +5,25 @@
         "start": "meteor run",
         "test": "meteor test --once --driver-package meteortesting:mocha",
         "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+        "test-lint": "npm run lint --silent",
+        "test-snyk": "snyk test",
         "visualize": "meteor --production --extra-packages bundle-visualizer",
-        "lint": "eslint . --ext .js,.ts,.tsx",
-        "pretest": "npm run lint --silent",
-        "snyk-protect": "snyk protect",
-        "prepare": "npm run snyk-protect"
+        "lint": "eslint . --ext .js,.ts,.tsx"
     },
     "dependencies": {
         "@babel/runtime": "^7.9.6",
         "filesize": "^6.1.0",
-        "grommet": "^2.13.0",
-        "meteor-node-stubs": "^1.0.0",
+        "grommet": "^2.34.2",
+        "meteor-node-stubs": "^1.2.7",
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
         "react-use": "^15.1.1",
         "snyk": "^1.320.3",
-        "styled-components": "^5.1.1"
+        "styled-components": "^6.1.8"
     },
     "devDependencies": {
         "@meteorjs/eslint-config-meteor": "^1.0.5",
-        "@types/meteor": "^1.4.47",
+        "@types/meteor": "^1.4.30",
         "@types/mocha": "^5.2.7",
         "@types/react": "^16.9.35",
         "@types/react-dom": "^16.9.8",
@@ -35,7 +34,7 @@
         "eslint-config-airbnb": "^18.0.1",
         "eslint-config-prettier": "^6.9.0",
         "eslint-import-resolver-meteor": "^0.4.0",
-        "eslint-plugin-import": "^2.20.0",
+        "eslint-plugin-import": "^2.29.1",
         "eslint-plugin-jsx-a11y": "^6.2.3",
         "eslint-plugin-meteor": "^6.0.0",
         "eslint-plugin-prettier": "^3.1.2",
@@ -43,6 +42,7 @@
         "eslint-plugin-react-hooks": "^2.3.0",
         "jquery": "^3.5.0",
         "prettier": "^1.19.1",
+        "snyk": "^1.1269.0",
         "typescript": "^3.6.3"
     },
     "meteor": {
