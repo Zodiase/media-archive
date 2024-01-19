@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Files } from '/imports/api/files';
+import { Files } from '/imports/api/files/collections';
 import './publications';
 
 function insertFile(name: string) {

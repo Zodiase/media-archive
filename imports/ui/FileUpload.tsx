@@ -1,9 +1,9 @@
 import React, { ReactElement, useMemo, useState, useCallback, ReactNode } from 'react';
-import { useDropArea } from 'react-use';
 import { DataTableProps, DataTable } from 'grommet/components/DataTable';
 import { Box } from 'grommet/components/Box';
 import { Text } from 'grommet/components/Text';
 import formatFileSize from 'filesize';
+import useDropArea from '../utility/react-hooks/useDropArea';
 
 export interface FileUploadTask {
     file: globalThis.File;
