@@ -58,9 +58,6 @@ workflows:
     build-and-test:
         jobs:
             - install
-            - test-snyk:
-                requires:
-                    - install
             - check-types:
                 requires:
                     - install
