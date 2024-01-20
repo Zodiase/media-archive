@@ -7,11 +7,14 @@ import { notImplemented } from '/imports/utility/noop';
 export interface FileUploadTask {
     file: globalThis.File;
     state: 'pending' | 'uploading' | 'done' | 'error';
+    // Progress is a number between 0 and 1.
+    progress: number;
 }
 
 const createFileUploadTask = (file: globalThis.File): FileUploadTask => ({
     file,
     state: 'pending',
+    progress: 0,
 });
 
 interface FileUploadList {

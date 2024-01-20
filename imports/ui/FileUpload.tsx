@@ -3,6 +3,7 @@ import { DataTableProps, DataTable } from 'grommet/components/DataTable';
 import { Box } from 'grommet/components/Box';
 import { Button } from 'grommet/components/Button';
 import { Text } from 'grommet/components/Text';
+import { Meter } from 'grommet/components/Meter';
 import formatFileSize from 'filesize';
 import useDropArea from '../utility/react-hooks/useDropArea';
 import { FileUploadTask, useSegmentedFileUpload } from '../api/files/segmentedUploading';
@@ -44,6 +45,20 @@ export const FileUpload = (): ReactElement => {
                 header: 'Upload State',
                 size: 'xsmall',
             },
+            {
+                property: 'progress',
+                header: 'Progress',
+                size: 'xsmall',
+                render: (uploadTask: FileUploadTask) => (
+                    <Box pad={{ vertical: 'xsmall' }}>
+                        <Meter
+                            values={[{ value: uploadTask.state === 'done' ? 100 : uploadTask.progress * 100 }]}
+                            thickness="small"
+                            size="small"
+                        />
+                    </Box>
+                ),
+            },
         ],
         [],
     );
@@ -70,10 +85,6 @@ export const FileUpload = (): ReactElement => {
             <Box direction="row" justify="between">
                 <Box direction="row" gap="small">
                     <Button label="Clear completed" onClick={onClearUploadedFiles} />
-                </Box>
-                <Box direction="row" gap="small">
-                    {/* A button to pause uploading */}
-                    {/* A button to cancel uploading */}
                 </Box>
             </Box>
 
