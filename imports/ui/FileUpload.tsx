@@ -6,7 +6,7 @@ import { Text } from 'grommet/components/Text';
 import { Meter } from 'grommet/components/Meter';
 import formatFileSize from 'filesize';
 import useDropArea from '../utility/react-hooks/useDropArea';
-import { FileUploadTask, useSegmentedFileUpload } from '../api/files/segmentedUploading';
+import { FileUploadTask, useChunkedFileUpload } from '../api/files/chunkedFileUpload';
 
 export function renderFileSizeColumnCell(uploadTask: FileUploadTask): ReactNode {
     return formatFileSize(uploadTask.file.size, {
@@ -16,7 +16,7 @@ export function renderFileSizeColumnCell(uploadTask: FileUploadTask): ReactNode 
 }
 
 export const FileUpload = (): ReactElement => {
-    const { fileUploadTasks, onAddFilesToUpload, onClearUploadedFiles } = useSegmentedFileUpload();
+    const { fileUploadTasks, onAddFilesToUpload, onClearUploadedFiles } = useChunkedFileUpload();
     const onDroppedFiles = useCallback((droppedFiles: globalThis.File[]) => {
         console.log('droppedFiles', droppedFiles);
         onAddFilesToUpload(droppedFiles);
@@ -42,7 +42,7 @@ export const FileUpload = (): ReactElement => {
             },
             {
                 property: 'state',
-                header: 'Upload State',
+                header: 'State',
                 size: 'xsmall',
             },
             {
@@ -50,7 +50,7 @@ export const FileUpload = (): ReactElement => {
                 header: 'Progress',
                 size: 'xsmall',
                 render: (uploadTask: FileUploadTask) => (
-                    <Box pad={{ vertical: 'xsmall' }}>
+                    <Box pad={{ vertical: 'xsmall' }} title={`Progress: ${(uploadTask.progress * 100).toFixed(1)}%`}>
                         <Meter
                             values={[{ value: uploadTask.state === 'done' ? 100 : uploadTask.progress * 100 }]}
                             thickness="small"
@@ -71,6 +71,8 @@ export const FileUpload = (): ReactElement => {
 
     const dragAndDropHint = dropState.over ? 'Release to drop files' : 'Drop files here';
 
+    console.log('fileUploadTasks', fileUploadTasks);
+
     return fileUploadTasks.length > 0 ? (
         <Box
             {...bond}
@@ -89,7 +91,7 @@ export const FileUpload = (): ReactElement => {
             </Box>
 
             {/* A table of files to be uploaded */}
-            <DataTable columns={droppedFilesTableColumns} data={fileUploadTasks} />
+            <DataTable primaryKey="id" columns={droppedFilesTableColumns} data={fileUploadTasks} />
         </Box>
     ) : (
         <Box

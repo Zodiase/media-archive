@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { notImplemented } from '/imports/utility/noop';
+import { FileChunkSize } from './fileChunk';
+import { Mongo } from 'meteor/mongo';
 
 /**
  * This interface describes a file upload task.
  */
 export interface FileUploadTask {
+    id: string;
     file: globalThis.File;
     state: 'pending' | 'uploading' | 'done' | 'error';
     // Progress is a number between 0 and 1.
@@ -12,6 +15,7 @@ export interface FileUploadTask {
 }
 
 const createFileUploadTask = (file: globalThis.File): FileUploadTask => ({
+    id: new Mongo.ObjectID().toHexString(),
     file,
     state: 'pending',
     progress: 0,
@@ -26,8 +30,9 @@ interface QueuedFileUploadTaskList {
     firstPendingTask: FileUploadTask;
     queuedTasks: FileUploadTask[];
     onAddFilesToUpload: (files: globalThis.File[]) => void;
-    onUploadedFile: (file: globalThis.File) => void;
     onStartedUploadingFile: (file: globalThis.File) => void;
+    onUpdateUploadProgress: (file: globalThis.File, progress: number) => void;
+    onUploadedFile: (file: globalThis.File) => void;
 }
 
 const useQueuedFileUploadTaskList = (): QueuedFileUploadTaskList => {
@@ -70,6 +75,17 @@ const useQueuedFileUploadTaskList = (): QueuedFileUploadTaskList => {
         };
     };
 
+    const updateTaskProgress = (task: FileUploadTask, progress: number): FileUploadTask => {
+        if (task.progress === progress) {
+            return task;
+        }
+        // When updating progress, we need to create a new object to trigger a re-render.
+        return {
+            ...task,
+            progress,
+        };
+    };
+
     const onStartedUploadingFile = (file: globalThis.File) => {
         console.log('onStartedUploadingFile', file.name, file.size);
         setFileUploadList((prev) => {
@@ -77,6 +93,24 @@ const useQueuedFileUploadTaskList = (): QueuedFileUploadTaskList => {
                 (task): FileUploadTask => {
                     if (task.file === file) {
                         return updateTaskState(task, 'uploading');
+                    }
+                    return task;
+                },
+            );
+            return {
+                queuedTasks: newQueuedTasks,
+                firstPendingTaskIndex: prev.firstPendingTaskIndex,
+            };
+        });
+    };
+
+    const onUpdateUploadProgress = (file: globalThis.File, progress: number) => {
+        console.log('onUpdateUploadProgress', file.name, progress);
+        setFileUploadList((prev) => {
+            const newQueuedTasks = prev.queuedTasks.map(
+                (task): FileUploadTask => {
+                    if (task.file === file) {
+                        return updateTaskProgress(task, progress);
                     }
                     return task;
                 },
@@ -113,6 +147,7 @@ const useQueuedFileUploadTaskList = (): QueuedFileUploadTaskList => {
         queuedTasks,
         onAddFilesToUpload,
         onStartedUploadingFile,
+        onUpdateUploadProgress,
         onUploadedFile,
     };
 };
@@ -122,12 +157,51 @@ const useFileUploader = (queuedFileList: QueuedFileUploadTaskList) => {
 
     if (currentTask && currentTask.state === 'pending') {
         queuedFileList.onStartedUploadingFile(currentTask.file);
-        //TODO: Upload the file.
-        setTimeout(() => {
-            // ...
-            // When the file is uploaded, call:
+
+        // Split file, read from FileReader, into chunks of chunkSize bytes.
+        const readFileChunk = async (file: globalThis.File, chunkSize: number, offset: number) =>
+            new Promise<ArrayBuffer>((resolve, reject) => {
+                const r = new FileReader();
+                const blob = file.slice(offset, offset + chunkSize);
+                r.onload = (evt) => {
+                    if (!evt.target) {
+                        reject('No event target');
+                        return;
+                    }
+                    if (evt.target.error) {
+                        console.error('Error reading file: ', evt.target.error);
+                        reject(evt.target.error);
+                        return;
+                    }
+
+                    const chunk = evt.target.result as ArrayBuffer;
+                    console.log('chunk', chunk.byteLength);
+                    resolve(chunk);
+                };
+                r.readAsArrayBuffer(blob);
+            });
+
+        (async () => {
+            const chunkSize = FileChunkSize;
+            const chunkCount = Math.ceil(currentTask.file.size / chunkSize);
+            let offset = 0;
+            let chunkIndex = 0;
+
+            while (offset < currentTask.file.size) {
+                const chunk = await readFileChunk(currentTask.file, chunkSize, offset);
+                console.log('uploading chunk', chunkIndex, chunkCount, chunk.byteLength);
+
+                //TODO: upload chunk
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                offset += chunk.byteLength;
+                chunkIndex += 1;
+                const progress = offset / currentTask.file.size;
+                queuedFileList.onUpdateUploadProgress(currentTask.file, progress);
+            }
+
             queuedFileList.onUploadedFile(currentTask.file);
-        }, 3000);
+        })();
     }
 };
 
@@ -137,7 +211,7 @@ export interface SegmentedFileUpload {
     onClearUploadedFiles: () => void;
 }
 
-export const useSegmentedFileUpload = (): SegmentedFileUpload => {
+export const useChunkedFileUpload = (): SegmentedFileUpload => {
     console.log('!!useSegmentedFileUpload');
     const queuedTaskList = useQueuedFileUploadTaskList();
 

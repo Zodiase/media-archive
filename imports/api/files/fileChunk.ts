@@ -31,4 +31,4 @@ export interface FileChunk {
     data: Buffer;
 }
 
-export const MaxChunkSize = 2 * 1024 * 1024; // 2MB
+export const FileChunkSize = 2 * 1024 * 1024; // 2MB
