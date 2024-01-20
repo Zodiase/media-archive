@@ -1,14 +1,11 @@
-import React, { ReactElement, useMemo, useState, useCallback, ReactNode } from 'react';
+import React, { ReactElement, useMemo, useCallback, ReactNode } from 'react';
 import { DataTableProps, DataTable } from 'grommet/components/DataTable';
 import { Box } from 'grommet/components/Box';
+import { Button } from 'grommet/components/Button';
 import { Text } from 'grommet/components/Text';
 import formatFileSize from 'filesize';
 import useDropArea from '../utility/react-hooks/useDropArea';
-
-export interface FileUploadTask {
-    file: globalThis.File;
-    reader: FileReader;
-}
+import { FileUploadTask, useSegmentedFileUpload } from '../api/files/segmentedUploading';
 
 export function renderFileSizeColumnCell(uploadTask: FileUploadTask): ReactNode {
     return formatFileSize(uploadTask.file.size, {
@@ -18,19 +15,10 @@ export function renderFileSizeColumnCell(uploadTask: FileUploadTask): ReactNode 
 }
 
 export const FileUpload = (): ReactElement => {
-    const [fileUploadTasks, setFileUploadTasks] = useState<FileUploadTask[]>([]);
+    const { fileUploadTasks, onAddFilesToUpload, onClearUploadedFiles } = useSegmentedFileUpload();
     const onDroppedFiles = useCallback((droppedFiles: globalThis.File[]) => {
-        setFileUploadTasks((currentFileUploadTasks) => {
-            const newFileUploadTasks = droppedFiles.map((droppedFile) => {
-                return {
-                    file: droppedFile,
-                    uploadState: 'pending',
-                    reader: new FileReader(),
-                };
-            });
-
-            return [...currentFileUploadTasks, ...newFileUploadTasks];
-        });
+        console.log('droppedFiles', droppedFiles);
+        onAddFilesToUpload(droppedFiles);
     }, []);
 
     const droppedFilesTableColumns: DataTableProps['columns'] = useMemo(
@@ -52,7 +40,7 @@ export const FileUpload = (): ReactElement => {
                 size: 'small',
             },
             {
-                property: 'uploadState',
+                property: 'state',
                 header: 'Upload State',
                 size: 'xsmall',
             },
@@ -78,6 +66,18 @@ export const FileUpload = (): ReactElement => {
             pad="small"
             justify="stretch"
         >
+            {/* A toolbar with buttons */}
+            <Box direction="row" justify="between">
+                <Box direction="row" gap="small">
+                    <Button label="Clear completed" onClick={onClearUploadedFiles} />
+                </Box>
+                <Box direction="row" gap="small">
+                    {/* A button to pause uploading */}
+                    {/* A button to cancel uploading */}
+                </Box>
+            </Box>
+
+            {/* A table of files to be uploaded */}
             <DataTable columns={droppedFilesTableColumns} data={fileUploadTasks} />
         </Box>
     ) : (
