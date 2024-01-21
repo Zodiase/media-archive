@@ -25,6 +25,7 @@
  */
 
 import { Meteor } from 'meteor/meteor';
+import CryptoJS from 'crypto-js';
 import { Files, FileChunks } from './collections';
 import {
     File,
