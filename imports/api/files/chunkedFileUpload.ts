@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { notImplemented } from '/imports/utility/noop';
-import { FileChunkSize } from './fileChunk';
+import { FileChunkSize } from './chunkedFile';
 import { Mongo } from 'meteor/mongo';
 
 /**

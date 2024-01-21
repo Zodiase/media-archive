@@ -6,7 +6,7 @@ import { Text } from 'grommet/components/Text';
 import { Meter } from 'grommet/components/Meter';
 import formatFileSize from 'filesize';
 import useDropArea from '../utility/react-hooks/useDropArea';
-import { FileUploadTask, useChunkedFileUpload } from '../api/files/chunkedFileUpload';
+import { FileUploadTask, useChunkedFileUpload } from '../api/files';
 
 export function renderFileSizeColumnCell(uploadTask: FileUploadTask): ReactNode {
     return formatFileSize(uploadTask.file.size, {

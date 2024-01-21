@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
-import { File } from './file';
-import { FileChunk } from './fileChunk';
+import { File, FileChunk } from './chunkedFile';
+import { InStorage } from '/imports/utility/collection';
 
-export const Files = new Mongo.Collection<File>('files');
-export const FileChunks = new Mongo.Collection<FileChunk>('file-chunks');
+export const Files = new Mongo.Collection<InStorage<File>>('files');
+export const FileChunks = new Mongo.Collection<InStorage<FileChunk>>('file-chunks');
