@@ -1,4 +1,8 @@
 /**
+ * This module contains the logic for handling files in a chunked manner.
+ */
+
+/**
  * This interface describes a file.
  *
  * This contains basic metadata of a file.
@@ -29,21 +33,8 @@ export interface File {
 
     /**
      * The state of this file.
-     * The state of a file can be one of the following:
-     * - creating: The file is being created. Records of this file are being created in the files and file-chunks collections. In this state, the properties of this file are not yet finalized.
-     *   - Can transition to: created, failed.
-     * - created: The file has been created but not uploaded yet.
-     *   - Can transition to: uploading, failed, abandoned.
-     * - uploading: The file is being uploaded.
-     *   - Can transition to: finalized, failed, abandoned.
-     * - finalized: The file has been uploaded.
-     *   - Can transition to: deleted.
-     * - failed: The file has failed to upload. It can be retried.
-     *   - Can transition to: abandoned.
-     * - deleted: The file has been deleted.
-     * - abandoned: The file has been abandoned during upload. It can not be retried. This record can be deleted.
      */
-    state: 'creating' | 'created' | 'uploading' | 'finalized' | 'failed' | 'deleted' | 'abandoned';
+    state: FileState;
 
     /**
      * Size of each chunk (except the last one) in bytes.
@@ -74,11 +65,52 @@ export interface File {
     hash: string;
 }
 
-export const StatesWhereFileDoesNotExist: File['state'][] = ['creating', 'deleted', 'abandoned'];
-export const StatesWhereFileCanBeUploaded: File['state'][] = ['created', 'uploading', 'failed'];
-export const StatesWhereFileIsAlreadyUploaded: File['state'][] = ['finalized'];
-export const StatesWhereFileCanBeFinalized: File['state'][] = ['uploading'];
-export const StatesWhereFileCanBeDeleted: File['state'][] = ['finalized'];
+/**
+ * This enum represents the state of a file.
+ */
+export enum FileState {
+    /**
+     * The file is being created. Records of this file are being created in the files and file-chunks collections. In this state, the properties of this file are not yet finalized.
+     * Can transition to: created, failed.
+     */
+    Creating = 'creating',
+    /**
+     * The file has been created but not uploaded yet.
+     * Can transition to: uploading, failed, abandoned.
+     */
+    Created = 'created',
+    /**
+     * The file is being uploaded.
+     * Can transition to: finalized, failed, abandoned.
+     */
+    Uploading = 'uploading',
+    /**
+     * The file has been uploaded.
+     * Can transition to: deleted.
+     */
+    Finalized = 'finalized',
+    /**
+     * The file has failed to upload. It can be retried.
+     * Can transition to: uploading, abandoned.
+     */
+    Failed = 'failed',
+    /**
+     * The file has been deleted.
+     * Can not transition to any other state.
+     */
+    Deleted = 'deleted',
+    /**
+     * The file has been abandoned during upload. It can not be retried. This record can be deleted.
+     * Can not transition to any other state.
+     */
+    Abandoned = 'abandoned',
+}
+
+export const StatesWhereFileDoesNotExist: FileState[] = [FileState.Creating, FileState.Deleted, FileState.Abandoned];
+export const StatesWhereFileCanBeUploaded: FileState[] = [FileState.Created, FileState.Uploading, FileState.Failed];
+export const StatesWhereFileIsAlreadyUploaded: FileState[] = [FileState.Finalized];
+export const StatesWhereFileCanBeFinalized: FileState[] = [FileState.Uploading];
+export const StatesWhereFileCanBeDeleted: FileState[] = [FileState.Finalized];
 
 export interface FileChunkInfo {
     /**
@@ -98,15 +130,8 @@ export interface FileChunkInfo {
 
     /**
      * The state of this chunk.
-     * The state of a chunk can be one of the following:
-     * - created: The chunk has been created but not uploaded yet.
-     *  - Can transition to: uploading, failed.
-     * - uploading: The chunk is being uploaded.
-     * - Can transition to: finalized, failed.
-     * - finalized: The chunk has been uploaded.
-     * - failed: The chunk has failed to upload. It can be retried.
      */
-    state: 'created' | 'uploading' | 'finalized' | 'failed';
+    state: FileChunkState;
 
     /**
      * The size of this chunk in bytes.
@@ -139,15 +164,8 @@ export interface FileChunk {
 
     /**
      * The state of this chunk.
-     * The state of a chunk can be one of the following:
-     * - created: The chunk has been created but not uploaded yet.
-     *   - Can transition to: uploading, failed.
-     * - uploading: The chunk is being uploaded.
-     *   - Can transition to: finalized, failed.
-     * - finalized: The chunk has been uploaded.
-     * - failed: The chunk has failed to upload. It can be retried.
      */
-    state: 'created' | 'uploading' | 'finalized' | 'failed';
+    state: FileChunkState;
 
     /**
      * The size of this chunk.
@@ -166,8 +184,35 @@ export interface FileChunk {
     hash: string;
 }
 
+export enum FileChunkState {
+    /**
+     * The chunk has been created but not uploaded yet.
+     * Can transition to: uploading, failed.
+     */
+    Created = 'created',
+    /**
+     * The chunk is being uploaded.
+     * Can transition to: finalized, failed.
+     */
+    Uploading = 'uploading',
+    /**
+     * The chunk has been uploaded.
+     * Can not transition to any other state.
+     */
+    Finalized = 'finalized',
+    /**
+     * The chunk has failed to upload. It can be retried.
+     * Can transition to: uploading.
+     */
+    Failed = 'failed',
+}
+
 export const FileChunkSize = 2 * 1024 * 1024; // 2MB
 
-export const StatesWhereChunkIsAlreadyUploaded: FileChunkInfo['state'][] = ['finalized'];
-export const StatesWhereChunkCanBeUpdated: FileChunkInfo['state'][] = ['created', 'uploading', 'failed'];
-export const StatesWhereChunkCanBeFinalized: FileChunkInfo['state'][] = ['uploading'];
+export const StatesWhereChunkIsAlreadyUploaded: FileChunkState[] = [FileChunkState.Finalized];
+export const StatesWhereChunkCanBeUpdated: FileChunkState[] = [
+    FileChunkState.Created,
+    FileChunkState.Uploading,
+    FileChunkState.Failed,
+];
+export const StatesWhereChunkCanBeFinalized: FileChunkState[] = [FileChunkState.Uploading];

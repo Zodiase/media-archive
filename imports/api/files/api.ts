@@ -39,6 +39,8 @@ import {
     StatesWhereChunkCanBeUpdated,
     StatesWhereChunkCanBeFinalized,
     StatesWhereFileCanBeFinalized,
+    FileState,
+    FileChunkState,
 } from './chunkedFile';
 import { hashBinaryData } from '/imports/utility/collection';
 
@@ -105,7 +107,7 @@ export const insertFile = (file: InsertFileRequest): InsertFileResponse => {
         name,
         size,
         type,
-        state: 'creating',
+        state: FileState.Creating,
         chunkSize,
         chunks: [],
         createdAt: currentDate,
@@ -119,7 +121,7 @@ export const insertFile = (file: InsertFileRequest): InsertFileResponse => {
         const chunk: FileChunk = {
             fileId,
             index,
-            state: 'created',
+            state: FileChunkState.Created,
             size: index === chunkCount - 1 ? size % chunkSize : chunkSize,
             data: new Uint8Array(),
             hash: '',
@@ -140,7 +142,7 @@ export const insertFile = (file: InsertFileRequest): InsertFileResponse => {
 
     Files.update(fileId, {
         $set: {
-            state: 'created',
+            state: FileState.Created,
             chunks,
         },
     });
@@ -308,7 +310,7 @@ export const uploadFileChunk = (fileChunk: UploadFileChunkRequest): UploadFileCh
         },
         {
             $set: {
-                state: 'uploading',
+                state: FileChunkState.Uploading,
                 data,
                 hash,
             },
@@ -326,7 +328,7 @@ export const uploadFileChunk = (fileChunk: UploadFileChunkRequest): UploadFileCh
         },
         {
             $set: {
-                state: 'uploading',
+                state: FileState.Uploading,
                 modifiedAt: currentDate,
                 [`chunks.${chunkInfo.index}.state`]: 'uploading',
                 [`chunks.${chunkInfo.index}.hash`]: hash,
@@ -424,7 +426,7 @@ export const finalizeFileChunk = (fileChunk: FinalizeFileChunkRequest): Finalize
         },
         {
             $set: {
-                state: 'finalized',
+                state: FileChunkState.Finalized,
             },
         },
     );
@@ -441,7 +443,7 @@ export const finalizeFileChunk = (fileChunk: FinalizeFileChunkRequest): Finalize
         },
         {
             $set: {
-                state: 'uploading',
+                state: FileState.Uploading,
                 modifiedAt: currentDate,
                 [`chunks.${chunkInfo.index}.state`]: 'finalized',
             },
@@ -522,7 +524,7 @@ export const finalizeFile = (file: FinalizeFileRequest): FinalizeFileResponse =>
             $in: chunkIds,
         },
         fileId,
-        state: 'finalized',
+        state: FileChunkState.Finalized,
     }).count();
 
     if (finalizedChunkCount !== chunkCount) {
@@ -566,7 +568,7 @@ export const finalizeFile = (file: FinalizeFileRequest): FinalizeFileResponse =>
         },
         {
             $set: {
-                state: 'finalized',
+                state: FileState.Finalized,
                 modifiedAt: currentDate,
                 hash: hashString,
             },
