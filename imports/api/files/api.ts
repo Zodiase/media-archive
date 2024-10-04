@@ -87,7 +87,7 @@ export interface InsertFileResponse {
 /**
  * TODO: add the concept of upload tasks with unique IDs so clients can accurately track the progress of each upload task.
  * This method is used to insert a file.
- * An inserted is not uploaded yet.
+ * An inserted file is not uploaded yet.
  * The finalizeFile method must be called to mark the file as uploaded.
  * @param file The file to insert.
  * @returns The ID of the inserted file.
