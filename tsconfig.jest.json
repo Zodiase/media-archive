@@ -1,0 +1,11 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noUnusedLocals": false, // This disables TS6133
+        "noUnusedParameters": false // Optionally disable TS6133 for unused parameters
+    },
+    "include": [
+        "**/*.test.ts", // Adjust this to match your Jest test file pattern
+        "**/*.test.tsx"
+    ]
+}

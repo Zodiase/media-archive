@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Files } from '/imports/api/files/collections';
+import { Files } from '/imports/api/files/chunkedFile/collections';
 
 /**
  * Publish all files for prototyping.

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { notImplemented } from '/imports/utility/noop';
-import { FileChunkSize } from './chunkedFile';
 import { Mongo } from 'meteor/mongo';
+import { FileChunkSize } from './properties';
 
 /**
  * This interface describes a file upload task.

@@ -1,42 +1,40 @@
 import { Meteor } from 'meteor/meteor';
-import { Files, insertFile, uploadFileChunk, finalizeFileChunk, finalizeFile } from '/imports/api/files';
+import { v4 as uuid } from 'uuid';
+import { Files, insertFile, uploadFile, finalizeFile } from '/imports/api/files';
 import './publications';
-import { hashBinaryData } from '/imports/utility/collection';
+import { FileChunkSize } from '/imports/api/files/chunkedFile/properties';
 
 function insertCompleteTextFile(name: string, data: string) {
-    const { fileId, chunkIds, chunkSize } = insertFile({
+    const { fileId } = insertFile({
+        requestId: uuid(),
         name,
         size: data.length,
         type: 'text/plain',
     });
 
+    const fingerprints = [];
+
     // Upload chunk data for each chunk.
-    for (let i = 0; i < chunkIds.length; i++) {
-        const chunkId = chunkIds[i];
-        const start = i * chunkSize;
-        const end = (i + 1) * chunkSize;
+    for (let i = 0; i < data.length; i += FileChunkSize) {
+        const start = i;
+        const end = i + FileChunkSize;
         const chunkData = data.slice(start, end);
         // Convert chunkData from string to Uint8Array.
         const chunkDataBytes = new TextEncoder().encode(chunkData);
 
-        uploadFileChunk({
+        const { fingerprint } = uploadFile({
             fileId,
-            index: i,
-            chunkId,
+            start,
             size: chunkData.length,
             data: chunkDataBytes,
         });
-        finalizeFileChunk({
-            fileId,
-            index: i,
-            chunkId,
-            expectedHash: hashBinaryData(chunkDataBytes),
-        });
+        fingerprints.push(fingerprint);
     }
 
     finalizeFile({
         fileId,
         size: data.length,
+        fingerprint: fingerprints.join(':'),
     });
 }
 

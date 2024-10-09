@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         /* Basic Options */
-        "target": "es2018",
+        "target": "ES2018",
         "module": "esNext",
         "lib": ["esnext", "dom"],
         "allowJs": true,
@@ -29,9 +29,10 @@
         },
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "types": ["node", "mocha"],
+        "skipLibCheck": true,
+        "types": ["node"],
         "esModuleInterop": true,
         "preserveSymlinks": true
     },
-    "exclude": ["./.meteor/**", "./packages/**"]
+    "exclude": ["node_modules", "./.meteor/**", "./packages/**"]
 }
