@@ -3,8 +3,11 @@ import { v4 as uuid } from 'uuid';
 import { Files, insertFile, uploadFile, finalizeFile } from '/imports/api/files';
 import './publications';
 import { FileChunkSize } from '/imports/api/files/chunkedFile/properties';
+import { DiagnosticContext, log } from '/imports/utility/diagnosticContext';
 
 function insertCompleteTextFile(name: string, data: string) {
+    log('Inserting file:', name);
+
     const { fileId } = insertFile({
         requestId: uuid(),
         name,
@@ -36,17 +39,21 @@ function insertCompleteTextFile(name: string, data: string) {
         size: data.length,
         fingerprint: fingerprints.join(':'),
     });
+
+    log('Inserted file:', name);
 }
 
 Meteor.startup(() => {
-    // If the Links collection is empty, add some data.
-    if (Files.find().count() === 0) {
-        insertCompleteTextFile('Tutorial.md', '# Tutorial\n\nThis is a tutorial.');
+    DiagnosticContext.wrap('server', () => {
+        // If the Links collection is empty, add some data.
+        if (Files.find().count() === 0) {
+            insertCompleteTextFile('Tutorial.md', '# Tutorial\n\nThis is a tutorial.');
 
-        insertCompleteTextFile('Guide.md', '# Guide\n\nThis is a guide.');
+            insertCompleteTextFile('Guide.md', '# Guide\n\nThis is a guide.');
 
-        insertCompleteTextFile('Docs.md', '# Docs\n\nThis is a documentation.');
+            insertCompleteTextFile('Docs.md', '# Docs\n\nThis is a documentation.');
 
-        insertCompleteTextFile('Discussions.md', '# Discussions\n\nThis is a discussion.');
-    }
+            insertCompleteTextFile('Discussions.md', '# Discussions\n\nThis is a discussion.');
+        }
+    });
 });
