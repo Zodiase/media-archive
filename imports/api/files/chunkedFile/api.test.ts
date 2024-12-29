@@ -67,7 +67,7 @@ describe('Files.chunkedFile.api', function() {
 
     describe('FileChunk interfaces', function() {
         it('has correct properties at various states', function() {
-            let fileChunk: FileChunk = {
+            let fileChunk: FileChunk['general'] = {
                 state: FileChunkState.Created,
                 fileId: 'fileId',
                 start: 0,
