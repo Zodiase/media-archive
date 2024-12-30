@@ -4,11 +4,11 @@
 #
 version: 2.1
 orbs:
-    node: circleci/node@5.2.0
+    node: circleci/node@7.0.0
 jobs:
     install:
         docker:
-            - image: cimg/node:14.21.3
+            - image: cimg/node:22.11.0
         working_directory: ~/repo
         steps:
             - checkout
@@ -20,7 +20,7 @@ jobs:
                     - node_modules
     test-snyk:
         docker:
-            - image: cimg/node:14.21.3
+            - image: cimg/node:22.11.0
         working_directory: ~/repo
         steps:
             - checkout
@@ -31,7 +31,7 @@ jobs:
                 command: npm run test-snyk
     check-types:
         docker:
-            - image: cimg/node:14.21.3
+            - image: cimg/node:22.11.0
         working_directory: ~/repo
         steps:
             - checkout
@@ -42,7 +42,7 @@ jobs:
                 command: npm run check-types
     test:
         docker:
-            - image: cimg/node:14.21.3
+            - image: cimg/node:22.11.0
         working_directory: ~/repo
         steps:
             - checkout

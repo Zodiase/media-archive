@@ -67,5 +67,9 @@
         },
         "testModule": "tests/meteor/main.ts"
     },
+    "engines": {
+        "node": ">=22.0.0",
+        "npm": ">=10.0.0"
+    },
     "snyk": true
 }
