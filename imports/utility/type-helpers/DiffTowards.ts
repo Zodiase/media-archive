@@ -14,6 +14,7 @@ export type DiffTowards<T, U> = {
     [K in keyof U as K extends keyof T ? (U[K] extends T[K] ? K : never) : never]?: U[K];
 };
 
+// @ts-expect-error TS6196: This type is not used because it's a test.
 type Tests = [
     // If both types have the same property of the same type, the result type will have that property as optional.
     Expect<TypesMatch<DiffTowards<{ a: string }, { a: string }>, { a?: string }>>,

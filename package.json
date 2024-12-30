@@ -3,7 +3,7 @@
     "private": true,
     "scripts": {
         "start": "meteor run",
-        "check-types": "tsc --noEmit --project ./tsconfig.tests.json",
+        "check-types": "tsc --noEmit --project ./tsconfig.app.json",
         "test": "npm run test-jest && npm run test-meteor",
         "test-jest": "jest",
         "test-meteor": "meteor test --once --driver-package meteortesting:mocha",
