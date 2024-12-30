@@ -1,0 +1,35 @@
+{
+    "extends": "./tsconfig.meteor.json",
+    "compilerOptions": {
+        "composite": true,
+        "noEmit": false,
+        "noUnusedLocals": false, // This disables TS6133
+        "noUnusedParameters": false, // Optionally disable TS6133 for unused parameters
+        "types": ["mocha"]
+    },
+    "include": [
+        // Meteor files.
+        "client/**/*.ts",
+        "client/**/*.tsx",
+        "server/**/*.ts",
+        "server/**/*.tsx",
+        "imports/**/*.ts",
+        "imports/**/*.tsx",
+
+        // Test files.
+        "tests/meteor/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "./.meteor/**",
+        "./packages/**",
+
+        // Test files managed by Jest.
+        "client/**/*.test.ts",
+        "client/**/*.test.tsx",
+        "server/**/*.test.ts",
+        "server/**/*.test.tsx",
+        "imports/**/*.test.ts",
+        "imports/**/*.test.tsx"
+    ]
+}

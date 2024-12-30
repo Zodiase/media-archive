@@ -1,19 +1,59 @@
 import { Meteor } from 'meteor/meteor';
-import { Links } from '/imports/api/links';
+import { v4 as uuid } from 'uuid';
+import { Files, insertFile, uploadFile, finalizeFile } from '/imports/api/files';
+import './publications';
+import { FileChunkSize } from '/imports/api/files/chunkedFile/properties';
+import { DiagnosticContext, log } from '/imports/utility/diagnosticContext';
 
-function insertLink(title: string, url: string) {
-    Links.insert({ title, url, createdAt: new Date() });
+async function insertCompleteTextFile(name: string, data: string) {
+    log('Inserting file:', name);
+
+    const { fileId } = await insertFile({
+        requestId: uuid(),
+        name,
+        size: data.length,
+        type: 'text/plain',
+    });
+
+    const fingerprints = [];
+
+    // Upload chunk data for each chunk.
+    for (let i = 0; i < data.length; i += FileChunkSize) {
+        const start = i;
+        const end = i + FileChunkSize;
+        const chunkData = data.slice(start, end);
+        // Convert chunkData from string to Uint8Array.
+        const chunkDataBytes = new TextEncoder().encode(chunkData);
+
+        const { fingerprint } = await uploadFile({
+            fileId,
+            start,
+            size: chunkData.length,
+            data: chunkDataBytes,
+        });
+        fingerprints.push(fingerprint);
+    }
+
+    finalizeFile({
+        fileId,
+        size: data.length,
+        fingerprint: fingerprints.join(':'),
+    });
+
+    log('Inserted file:', name);
 }
 
-Meteor.startup(() => {
-    // If the Links collection is empty, add some data.
-    if (Links.find().count() === 0) {
-        insertLink('Do the Tutorial', 'https://www.meteor.com/tutorials/react/creating-an-app');
+Meteor.startup(async () => {
+    await DiagnosticContext.wrap('server', async () => {
+        // If the Links collection is empty, add some data.
+        if ((await Files.find().countAsync()) === 0) {
+            await insertCompleteTextFile('Tutorial.md', '# Tutorial\n\nThis is a tutorial.');
 
-        insertLink('Follow the Guide', 'http://guide.meteor.com');
+            await insertCompleteTextFile('Guide.md', '# Guide\n\nThis is a guide.');
 
-        insertLink('Read the Docs', 'https://docs.meteor.com');
+            await insertCompleteTextFile('Docs.md', '# Docs\n\nThis is a documentation.');
 
-        insertLink('Discussions', 'https://forums.meteor.com');
-    }
+            await insertCompleteTextFile('Discussions.md', '# Discussions\n\nThis is a discussion.');
+        }
+    });
 });
