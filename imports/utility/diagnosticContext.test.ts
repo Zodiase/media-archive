@@ -1,4 +1,5 @@
-import { jest, describe, expect, it, afterAll, afterEach } from '@jest/globals';
+import { expect } from 'expect';
+import { spyOn } from 'jest-mock';
 import { DiagnosticContext, log, warn, error } from './diagnosticContext';
 
 describe('DiagnosticContext', () => {
@@ -97,9 +98,9 @@ describe('DiagnosticContext', () => {
 
     describe('Loggers', () => {
         const spy = {
-            log: jest.spyOn(console, 'log'),
-            warn: jest.spyOn(console, 'warn'),
-            error: jest.spyOn(console, 'error'),
+            log: spyOn(console, 'log'),
+            warn: spyOn(console, 'warn'),
+            error: spyOn(console, 'error'),
         };
 
         afterEach(() => {

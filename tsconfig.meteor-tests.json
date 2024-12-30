@@ -5,7 +5,7 @@
         "noEmit": false,
         "noUnusedLocals": false, // This disables TS6133
         "noUnusedParameters": false, // Optionally disable TS6133 for unused parameters
-        "types": ["jest"]
+        "types": ["mocha"]
     },
     "include": [
         // Meteor files.
@@ -16,17 +16,20 @@
         "imports/**/*.ts",
         "imports/**/*.tsx",
 
-        // Mocks.
-        "tests/__mocks__/**/*.ts",
-        "tests/__mocks__/**/*.tsx",
-
         // Test files.
+        "tests/meteor/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "./.meteor/**",
+        "./packages/**",
+
+        // Test files managed by Jest.
         "client/**/*.test.ts",
         "client/**/*.test.tsx",
         "server/**/*.test.ts",
         "server/**/*.test.tsx",
         "imports/**/*.test.ts",
         "imports/**/*.test.tsx"
-    ],
-    "exclude": ["node_modules", "./.meteor/**", "./packages/**"]
+    ]
 }

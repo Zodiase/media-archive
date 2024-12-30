@@ -1,4 +1,6 @@
 import CryptoJS from 'crypto-js';
+import { Mongo } from 'meteor/mongo';
+import { Document } from 'bson';
 
 /**
  * When defining basic models, we are omitting the `_id` field.
@@ -18,3 +20,15 @@ export const hashBinaryData = (data: Uint8Array): string => {
     const wordArray = CryptoJS.lib.WordArray.create(words, data.length);
     return CryptoJS.SHA256(wordArray).toString(CryptoJS.enc.Hex);
 };
+
+type AsyncMethods = 'findOne' | 'insert' | 'update' | 'remove';
+type RemoveNonAsyncMethods<T> = {
+    [K in keyof T as K extends AsyncMethods ? never : K]: T[K];
+};
+export function enforceAsyncMethods<T extends Document, U>(collection: Mongo.Collection<T, U>): RemoveNonAsyncMethods<Mongo.Collection<T, U>> {
+    return collection;
+}
+
+export function defineMongoCollection<T extends Document, U = T>(name: string): RemoveNonAsyncMethods<Mongo.Collection<InStorage<T>, InStorage<U>>> {
+    return new Mongo.Collection<InStorage<T>, InStorage<U>>(name);
+}

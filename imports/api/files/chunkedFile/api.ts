@@ -19,7 +19,7 @@ import { FileChunkSize } from './properties';
  * @param request
  * @returns
  */
-export const insertFile: InsertFile = (request) => {
+export const insertFile: InsertFile = async (request) => {
     console.log('insertFile', request);
     const { requestId, name, size, type } = request;
     const chunkSize = FileChunkSize;
@@ -34,13 +34,21 @@ export const insertFile: InsertFile = (request) => {
         type,
         createdAt: currentDate,
     };
-    const fileId = Files.insert(newFile);
+    const fileId = await Files.insertAsync(newFile);
 
     try {
-        initializeFileChunks(fileId);
+        const fileChunkIds = await initializeFileChunks(fileId);
+        if (fileChunkIds.length === 0 && size > 0) {
+            throw new Error('No file chunks created.');
+        }
     } catch (error) {
         // If there was an error initializing the chunks, delete the file.
-        Files.remove(fileId);
+        const removed = await Files.removeAsync(fileId);
+        if (removed !== 1) {
+            console.warn('File could not be removed after chunk initialization error.', { fileId });
+        } else {
+            console.log('File removed after chunk initialization error.', { fileId });
+        }
         const errMsg = error instanceof Error ? error.message : String(error);
         throw new Error(`Could not insert file. File chunks could not be initialized. ${errMsg}`);
     }
@@ -55,9 +63,9 @@ export const insertFile: InsertFile = (request) => {
  *        The file record will be updated to reference the created chunks.
  * @returns The IDs of the created chunks.
  */
-function initializeFileChunks(fileId: string): string[] {
+async function initializeFileChunks(fileId: string): Promise<string[]> {
     const now = new Date();
-    const file = Files.findOne(fileId);
+    const file = await Files.findOneAsync(fileId);
     if (!file) {
         throw new Error('File not found');
     }
@@ -66,30 +74,32 @@ function initializeFileChunks(fileId: string): string[] {
         throw new Error('File is not in the creating state');
     }
     const chunkCount = Math.ceil(file.size / file.chunkSize);
-    const chunks: FileChunkInfo[] = Array.from({
-        length: chunkCount,
-    }).map((_, index) => {
-        const chunk: FileChunk['created'] = {
-            fileId,
-            state: FileChunkState.Created,
-            start: index * file.chunkSize,
-            chunkSize: file.chunkSize,
-            dataSize: index === chunkCount - 1 ? file.size % file.chunkSize : file.chunkSize,
-            createdAt: new Date(),
-        };
-        console.log('insertFile.chunk', chunk);
+    const chunks: FileChunkInfo[] = await Promise.all(
+        Array.from({
+            length: chunkCount,
+        }).map(async (_, index) => {
+            const chunk: FileChunk['created'] = {
+                fileId,
+                state: FileChunkState.Created,
+                start: index * file.chunkSize,
+                chunkSize: file.chunkSize,
+                dataSize: index === chunkCount - 1 ? file.size % file.chunkSize : file.chunkSize,
+                createdAt: new Date(),
+            };
+            console.log('insertFile.chunk', chunk);
 
-        const chunkId = FileChunks.insert(chunk);
-        const chunkInfo: FileChunkInfo = {
-            chunkId,
-            start: chunk.start,
-            state: chunk.state,
-            dataSize: chunk.dataSize,
-            fingerprint: '',
-        };
+            const chunkId = await FileChunks.insertAsync(chunk);
+            const chunkInfo: FileChunkInfo = {
+                chunkId,
+                start: chunk.start,
+                state: chunk.state,
+                dataSize: chunk.dataSize,
+                fingerprint: '',
+            };
 
-        return chunkInfo;
-    });
+            return chunkInfo;
+        }),
+    );
 
     const fileOverride: DiffTowards<File['creating'], File['created']> = {
         state: FileState.Created,
@@ -97,9 +107,12 @@ function initializeFileChunks(fileId: string): string[] {
         modifiedAt: now,
     };
 
-    Files.update(fileId, {
+    const updated = await Files.updateAsync(fileId, {
         $set: fileOverride,
     });
+    if (updated !== 1) {
+        throw new Error('Could not update file with chunks');
+    }
 
     const chunkIds = chunks.map((chunk) => chunk.chunkId);
     return chunkIds;
@@ -111,13 +124,13 @@ function initializeFileChunks(fileId: string): string[] {
  * @param request
  * @returns
  */
-export const uploadFile: UploadFile = (request) => {
+export const uploadFile: UploadFile = async (request) => {
     const now = new Date();
     console.log('uploadFile', request);
     const { fileId, start, size, data } = request;
 
     // Verify the file exists.
-    const file = Files.findOne(fileId);
+    const file = await Files.findOneAsync(fileId);
     if (!fileExists(file)) {
         throw new Error('File not found');
     }
@@ -172,15 +185,15 @@ export const uploadFile: UploadFile = (request) => {
     };
 
     if (
-        FileChunks.update(chunkInfo.chunkId, {
+        (await FileChunks.updateAsync(chunkInfo.chunkId, {
             $set: chunkOverride,
-        }) !== 1
+        })) !== 1
     ) {
         throw new Error('Could not update chunk.');
     }
 
     // Update the metadata of the file.
-    Files.update(
+    const updated = await Files.updateAsync(
         {
             _id: fileId,
             'chunks.chunkId': chunkInfo.chunkId,
@@ -199,6 +212,10 @@ export const uploadFile: UploadFile = (request) => {
         },
     );
 
+    if (updated !== 1) {
+        throw new Error('Could not update file with chunk data.');
+    }
+
     return { fingerprint: hash, size };
 };
 
@@ -207,13 +224,13 @@ export const uploadFile: UploadFile = (request) => {
  * @param request
  * @returns
  */
-export const finalizeFile: FinalizeFile = (request) => {
+export const finalizeFile: FinalizeFile = async (request) => {
     const now = new Date();
     console.log('finalizeFile', request);
     const { fileId, size, fingerprint } = request;
 
     // Verify the file exists.
-    const file = Files.findOne(fileId);
+    const file = await Files.findOneAsync(fileId);
     if (!fileExists(file)) {
         throw new Error('File not found');
     }
@@ -240,7 +257,7 @@ export const finalizeFile: FinalizeFile = (request) => {
         fingerprint,
         modifiedAt: now,
     };
-    Files.update(
+    const updated = await Files.updateAsync(
         {
             _id: fileId,
             //TODO: enforce file state.
@@ -252,6 +269,10 @@ export const finalizeFile: FinalizeFile = (request) => {
             $set: fileOverride,
         },
     );
+
+    if (updated !== 1) {
+        throw new Error('Could not finalize file.');
+    }
 
     return { fileId, fingerprint, size };
 };

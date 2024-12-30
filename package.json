@@ -3,11 +3,17 @@
     "private": true,
     "scripts": {
         "start": "meteor run",
-        "check-types": "tsc --noEmit --project ./tsconfig.jest.json",
-        "test": "meteor test --once --driver-package meteortesting:mocha",
+        "check-types": "tsc --noEmit --project ./tsconfig.tests.json",
+        "test": "npm run test-jest && npm run test-meteor",
+        "test-jest": "jest",
+        "test-meteor": "meteor test --once --driver-package meteortesting:mocha",
         "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
         "test-lint": "npm run lint --silent",
         "test-snyk": "snyk test",
+        "reset-all": "npm run reset-meteor-build && npm run reset-meteor-db && npm run reset-npm",
+        "reset-npm": "rm -rf node_modules",
+        "reset-meteor-build": "meteor reset",
+        "reset-meteor-db": "meteor reset --db",
         "visualize": "meteor --production --extra-packages bundle-visualizer",
         "lint": "eslint . --ext .js,.ts,.tsx"
     },
@@ -17,7 +23,7 @@
         "crypto-js": "^4.2.0",
         "filesize": "^6.1.0",
         "grommet": "^2.34.2",
-        "meteor-node-stubs": "^1.2.7",
+        "meteor-node-stubs": "^1.2.12",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "styled-components": "^5.3.11",
@@ -27,14 +33,15 @@
         "@jest/globals": "^29.7.0",
         "@meteorjs/eslint-config-meteor": "^1.0.5",
         "@types/crypto-js": "^4.2.1",
-        "@types/meteor": "^2.9.7",
+        "@types/jest": "^29.5.14",
+        "@types/meteor": "^2.9.8",
         "@types/mocha": "^10.0.6",
         "@types/react": "^18.2.48",
         "@types/react-dom": "^18.2.18",
         "@types/styled-components": "^5.1.34",
         "@types/uuid": "^10.0.0",
-        "@typescript-eslint/eslint-plugin": "^5.62.0",
-        "@typescript-eslint/parser": "^5.62.0",
+        "@typescript-eslint/eslint-plugin": "^8.18.2",
+        "@typescript-eslint/parser": "^8.18.2",
         "babel-eslint": "^10.0.3",
         "eslint": "^8.56.0",
         "eslint-config-airbnb": "^19.0.4",
@@ -57,7 +64,8 @@
         "mainModule": {
             "client": "client/main.tsx",
             "server": "server/main.ts"
-        }
+        },
+        "testModule": "tests/meteor/main.ts"
     },
     "snyk": true
 }

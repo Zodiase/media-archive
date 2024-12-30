@@ -1,0 +1,24 @@
+{
+    "extends": "./tsconfig.meteor.json",
+    "compilerOptions": {
+        "composite": true,
+        "noEmit": false
+    },
+    "include": [
+        "client/**/*.ts",
+        "client/**/*.tsx",
+        "server/**/*.ts",
+        "server/**/*.tsx",
+        "imports/**/*.ts",
+        "imports/**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules",
+        "./.meteor/**",
+        "./packages/**",
+        "tests/**/*.ts",
+        "tests/**/*.tsx",
+        "**/*.test.ts",
+        "**/*.test.tsx"
+    ]
+}

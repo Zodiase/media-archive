@@ -8,18 +8,18 @@ import formatFileSize from 'filesize';
 import { Files, File } from '/imports/api/files';
 import FileUpload from './FileUpload';
 
-export function renderFileSizeColumnCell(file: File): ReactNode {
+export function renderFileSizeColumnCell(file: File['created']): ReactNode {
     return formatFileSize(file.size, {
         // Minimum size unit is MB.
         exponent: 2,
     });
 }
 
-export function renderCreatedAtColumnCell(file: File): ReactNode {
+export function renderCreatedAtColumnCell(file: File['created']): ReactNode {
     return file.createdAt.toLocaleString();
 }
 
-export function renderModifiedAtColumnCell(file: File): ReactNode {
+export function renderModifiedAtColumnCell(file: File['created']): ReactNode {
     return file.modifiedAt.toLocaleString();
 }
 

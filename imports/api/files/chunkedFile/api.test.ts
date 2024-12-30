@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, test } from '@jest/globals';
 import { v4 as uuid } from 'uuid';
+import { expect } from 'expect';
 import { Mongo as MockedMongo } from '/tests/__mocks__/meteor/mongo';
 import { FileState } from '../abstractApi';
 import { File, FileChunk, FileChunkState } from './api';
@@ -107,37 +107,37 @@ describe('Files.chunkedFile.api', function() {
                 clearTestData();
             });
 
-            test('insert file of size 0', function() {
-                const fileId = insertFile({
+            it('insert file of size 0', async function() {
+                const fileId = await insertFile({
                     requestId: uuid(),
                     name: 'name',
                     size: 0,
                     type: 'type',
                 });
-                expect(Files.insert).toBeCalledTimes(1);
-                expect(FileChunks.insert).toBeCalledTimes(0);
+                expect(Files.insertAsync).toBeCalledTimes(1);
+                expect(FileChunks.insertAsync).toBeCalledTimes(0);
             });
 
-            test('insert file of some size smaller than chunk size', function() {
-                const fileId = insertFile({
+            it('insert file of some size smaller than chunk size', async function() {
+                const fileId = await insertFile({
                     requestId: uuid(),
                     name: 'name',
                     size: FileChunkSize - 1,
                     type: 'type',
                 });
-                expect(Files.insert).toBeCalledTimes(1);
-                expect(FileChunks.insert).toBeCalledTimes(1);
+                expect(Files.insertAsync).toBeCalledTimes(1);
+                expect(FileChunks.insertAsync).toBeCalledTimes(1);
             });
 
-            test('insert file of some size greater than chunk size', function() {
-                const fileId = insertFile({
+            it('insert file of some size greater than chunk size', async function() {
+                const fileId = await insertFile({
                     requestId: uuid(),
                     name: 'name',
                     size: FileChunkSize * 2 + 1,
                     type: 'type',
                 });
-                expect(Files.insert).toBeCalledTimes(1);
-                expect(FileChunks.insert).toBeCalledTimes(3);
+                expect(Files.insertAsync).toBeCalledTimes(1);
+                expect(FileChunks.insertAsync).toBeCalledTimes(3);
             });
         });
     });

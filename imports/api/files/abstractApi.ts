@@ -43,7 +43,7 @@ export interface InsertFileResponse {
  * @throws If the file is already deleted.
  */
 export interface InsertFile {
-    (request: TrackedRequest<InsertFileRequest>): TrackedRequest<InsertFileResponse>;
+    (request: TrackedRequest<InsertFileRequest>): Promise<TrackedRequest<InsertFileResponse>>;
 }
 
 /**
@@ -94,7 +94,7 @@ export interface UploadFileChunkResponse {
  * @throws If the file is in a state where it can not be uploaded.
  */
 export interface UploadFile {
-    (request: UploadFileRequest): UploadFileChunkResponse;
+    (request: UploadFileRequest): Promise<UploadFileChunkResponse>;
 }
 
 /**
@@ -132,7 +132,7 @@ export interface FinalizeFileResponse extends FinalizeFileRequest {}
  * @throws If the fingerprint does not match the file.
  */
 export interface FinalizeFile {
-    (request: FinalizeFileRequest): FinalizeFileResponse;
+    (request: FinalizeFileRequest): Promise<FinalizeFileResponse>;
 }
 
 /**
@@ -168,7 +168,7 @@ export interface DeleteFileResponse extends DeleteFileRequest {}
  * @throws If the file does not exist.
  */
 export interface DeleteFile {
-    (request: DeleteFileRequest): DeleteFileResponse;
+    (request: DeleteFileRequest): Promise<DeleteFileResponse>;
 }
 
 interface File_Base {
@@ -202,9 +202,15 @@ interface File_Base {
 /**
  * This helps to write different File interfaces in an expressive way to help understand how File states transition.
  */
-type OverrideFileState<T_Base extends { state: FileState }, T_State extends FileState, T_Ext extends FileStateExtensions, T_More extends {}> = Omit<T_Base, 'state'> & {
+type OverrideFileState<
+    T_Base extends { state: FileState },
+    T_State extends FileState,
+    T_Ext extends FileStateExtensions,
+    T_More extends {}
+> = Omit<T_Base, 'state'> & {
     state: T_State;
-} & T_Ext[T_State] & T_More;
+} & T_Ext[T_State] &
+    T_More;
 
 type FileStateExtensions = { [S in FileState]?: {} };
 
@@ -235,12 +241,7 @@ type File_Created<T extends FileStateExtensions> = OverrideFileState<
     }
 >;
 
-type File_Uploading<T extends FileStateExtensions> = OverrideFileState<
-    File_Created<T>,
-    FileState.Uploading,
-    T,
-    {}
->;
+type File_Uploading<T extends FileStateExtensions> = OverrideFileState<File_Created<T>, FileState.Uploading, T, {}>;
 
 /**
  * This can be transitioned to from the creating state.

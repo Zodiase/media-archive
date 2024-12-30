@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { expect } from 'expect';
 import { getChunkedUploadDetails, getChunkDataHash } from './chunkingHelpers';
 
 describe('getChunkedUploadDetails', () => {

@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import assert from 'assert';
-import { describe, it } from '@jest/globals';
 
 describe('media-archive', function() {
     it('package.json has correct name', async function() {
-        const { name } = await import('../package.json');
+        const { name } = await import('../../package.json');
         assert.strictEqual(name, 'media-archive');
     });
 

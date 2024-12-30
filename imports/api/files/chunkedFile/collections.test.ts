@@ -1,6 +1,6 @@
-import * as CollectionExports from './collections';
 import { Mongo } from 'meteor/mongo';
-import { describe, expect, it } from '@jest/globals';
+import { expect } from 'expect';
+import * as CollectionExports from './collections';
 
 describe('Files collection', function() {
     //! The instanceof check doesn't work since we are mocking the Mongo.Collection.
